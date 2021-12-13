@@ -8,7 +8,7 @@ but also a minimal named router for expressjs.
 ## Installation
 
 ```
-npm install namename
+npm install reversical
 ```
 
 ## Usage
