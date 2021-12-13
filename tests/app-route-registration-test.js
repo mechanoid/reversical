@@ -89,4 +89,16 @@ test('register route with optional query param', () => {
   assert.equal(routes.routeWithParams({ id: null }), '/routes')
 })
 
+test('register route with non-optional but empty query param should not fail, but warn', () => {
+  const app = express()
+  const namedRouter = new NamedRouter(app)
+
+  namedRouter.route('route-with-params', '/routes/:id')
+    .get((req, res) => {})
+
+  assert.doesNotThrow(() => {
+    routes.routeWithParams({ id: null })
+  })
+})
+
 test.run()

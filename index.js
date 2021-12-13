@@ -4,6 +4,8 @@ import { join } from 'path'
 import { compile } from 'path-to-regexp'
 import camelCase from 'camelcase'
 
+const { env } = process
+
 const hasOwn = Object.prototype.hasOwn ? Object.prototype.hasOwn : Object.prototype.hasOwnProperty
 
 const supportedExpressMethods = [
@@ -33,9 +35,17 @@ class Route {
   }
 
   render (params = {}, query = {}) {
-    const toPath = compile(this.routePath, { encode: encodeURIComponent })
-    const pathname = toPath(params, { optional: true })
-    return pathnameToRelativeUrl(pathname, query)
+    try {
+      const toPath = compile(this.routePath, { encode: encodeURIComponent })
+      const pathname = toPath(params)
+      return pathnameToRelativeUrl(pathname, query)
+    } catch (e) {
+      if (e instanceof TypeError) {
+        console.log(`failed to expand "${this.routePath}" with params "${JSON.stringify(params)}"`, e.stack)
+        return
+      }
+      throw e
+    }
   }
 }
 

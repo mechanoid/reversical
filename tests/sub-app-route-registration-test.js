@@ -4,7 +4,6 @@ import express from 'express'
 import { NamedRouter, routes, reset } from '../index.js'
 
 test.before.each(() => {
-  console.log('resetting routes')
   reset()
 })
 
