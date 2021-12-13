@@ -9,7 +9,7 @@ test('create named route via app.get', () => {
 
   namedRouter.get('simple-get-bound-route', '/simple-route', (req, res) => {})
 
-  assert.equal(routes['simple-get-bound-route'](), '/simple-route')
+  assert.equal(routes.simpleGetBoundRoute(), '/simple-route')
 })
 
 test.run()

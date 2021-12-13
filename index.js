@@ -2,6 +2,7 @@
 import { format } from 'url'
 import { join } from 'path'
 import { compile } from 'path-to-regexp'
+import camelCase from 'camelcase'
 
 const hasOwn = Object.prototype.hasOwn ? Object.prototype.hasOwn : Object.prototype.hasOwnProperty
 
@@ -43,7 +44,7 @@ class RouteRegistry {
 
     if (!this.routes[name] && !hasOwn.call(this, name)) {
       this.routes[name] = route
-      this[name] = this.routes[name].render.bind(this.routes[name])
+      this[camelCase(name)] = this.routes[name].render.bind(this.routes[name])
     } else if (this.routes[name].path !== path) {
       throw new Error(`NamedRouting: registered resource for "${name}" is already registered with different path (${this.routes[name].path} conflicts with ${path}).`)
     }
