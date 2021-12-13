@@ -4,8 +4,6 @@ import { join } from 'path'
 import { compile } from 'path-to-regexp'
 import camelCase from 'camelcase'
 
-const { env } = process
-
 const hasOwn = Object.prototype.hasOwn ? Object.prototype.hasOwn : Object.prototype.hasOwnProperty
 
 const supportedExpressMethods = [
