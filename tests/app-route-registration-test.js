@@ -79,4 +79,14 @@ test('register route with query/search params', () => {
   assert.equal(routes.routeWithParams({ id: 12 }, { s: 'term' }), '/routes/12?s=term')
 })
 
+test('register route with optional query param', () => {
+  const app = express()
+  const namedRouter = new NamedRouter(app)
+
+  namedRouter.route('route-with-params', '/routes/:id?')
+    .get((req, res) => {})
+
+  assert.equal(routes.routeWithParams({ id: null }), '/routes')
+})
+
 test.run()

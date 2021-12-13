@@ -34,7 +34,7 @@ class Route {
 
   render (params = {}, query = {}) {
     const toPath = compile(this.routePath, { encode: encodeURIComponent })
-    const pathname = toPath(params)
+    const pathname = toPath(params, { optional: true })
     return pathnameToRelativeUrl(pathname, query)
   }
 }
