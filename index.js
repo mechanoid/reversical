@@ -83,6 +83,11 @@ export class NamedRouter {
     return this.app.route(path)
   }
 
+  all (name, path, handler) {
+    this.routes.register(name, path, { app: this.app, mountpath: this.mountpath })
+    return this.app.all(path, handler)
+  }
+
   use (...args) {
     if (args.length === 3) {
       const [subModuleName, mountpath, appWithNamedRouterContext] = args

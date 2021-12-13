@@ -16,6 +16,15 @@ test('create named route via app.get', () => {
   assert.equal(routes.simpleGetBoundRoute(), '/simple-route')
 })
 
+test('create named route via app.all', () => {
+  const app = express()
+  const namedRouter = new NamedRouter(app)
+
+  namedRouter.all('simple-get-bound-route', '/simple-route', (req, res) => {})
+
+  assert.equal(routes.simpleGetBoundRoute(), '/simple-route')
+})
+
 test('registration for the same name should be ok, when bound path is equal to already registered', () => {
   const app = express()
   const namedRouter = new NamedRouter(app)
