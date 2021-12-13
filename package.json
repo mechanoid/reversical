@@ -1,7 +1,11 @@
 {
   "name": "reversical",
   "version": "1.1.0",
-  "description": "",
+  "description": "super simple named / reverse routing for express. Supports sub-apps though",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mechanoid/reversical.git"
+  },
   "main": "index.js",
   "scripts": {
     "test": "uvu tests"
