@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "uvu tests"
   },
   "author": "Falk Hoppe <falkhoppe81@gmail.com>",
   "license": "MIT",
@@ -16,8 +16,13 @@
     "eslint-config-standard": "^16.0.3",
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^5.2.0"
+    "eslint-plugin-promise": "^5.2.0",
+    "express": "^4.17.1",
+    "uvu": "^0.5.2"
   },
   "type": "module",
-  "module": "index.js"
+  "module": "index.js",
+  "dependencies": {
+    "path-to-regexp": "^6.2.0"
+  }
 }
