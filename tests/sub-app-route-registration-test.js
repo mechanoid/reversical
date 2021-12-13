@@ -34,4 +34,22 @@ test('register routes for plain mounted sub-app', () => {
   assert.equal(routes.records(), '/records')
 })
 
+test('register routes for "named" path mounted sub-app', () => {
+  const app = express()
+  const namedAppRouter = new NamedRouter(app)
+
+  const subAppWithNamedRouter = bindRouter => {
+    const subApp = express()
+    const namedRouter = bindRouter(subApp)
+
+    namedRouter.get('records', '/records', (req, res) => {})
+
+    return subApp
+  }
+
+  namedAppRouter.use('admin', '/admin', subAppWithNamedRouter) // mounting plain to the main app
+
+  assert.equal(routes.admin.records(), '/admin/records')
+})
+
 test.run()

@@ -18,13 +18,18 @@ const pathnameToRelativeUrl = (pathname, query = {}) => {
 }
 
 class Route {
-  constructor (path, { app } = {}) {
+  constructor (path, { app, mountpath } = {}) {
     this.path = path
     this.app = app
+    this.subModuleMountPath = mountpath
   }
 
   get routePath () {
-    return this.app.mountpath ? join(this.app.mountpath, this.path) : this.path
+    return this.mountpath ? join(this.mountpath, this.path) : this.path
+  }
+
+  get mountpath () {
+    return this.app.mountpath || this.subModuleMountPath
   }
 
   render (params = {}, query = {}) {
@@ -39,8 +44,8 @@ class RouteRegistry {
     this.routes = {}
   }
 
-  register (name, path, { app } = {}) {
-    const route = new Route(path, { app })
+  register (name, path, { app, mountpath } = {}) {
+    const route = new Route(path, { app, mountpath })
 
     if (!this.routes[name] && !hasOwn.call(this, name)) {
       this.routes[name] = route
@@ -49,6 +54,13 @@ class RouteRegistry {
       throw new Error(`NamedRouting: registered resource for "${name}" is already registered with different path (${this.routes[name].path} conflicts with ${path}).`)
     }
     // route is already registered, do nothing
+  }
+
+  addSubmodule (name, registry) {
+    if (!this.routes[name] && !hasOwn.call(this, name)) {
+      this.routes[name] = name
+      this[camelCase(name)] = registry
+    }
   }
 }
 
@@ -60,24 +72,34 @@ export const reset = () => {
 }
 
 export class NamedRouter {
-  constructor (app) {
+  constructor (app, { mountpath = null, routeRegistry = routes } = {}) {
     this.app = app
-    this.mountpath = app.mountpath
+    this.mountpath = mountpath
+    this.routes = routeRegistry
   }
 
   route (name, path) {
-    routes.register(name, path, { app: this.app })
+    this.routes.register(name, path, { app: this.app, mountpath: this.mountpath })
     return this.app.route(path)
   }
 
   use (...args) {
+    if (args.length === 3) {
+      const [subModuleName, mountpath, appWithNamedRouterContext] = args
+
+      const registry = new RouteRegistry()
+      this.routes.addSubmodule(subModuleName, registry)
+
+      const bindRouter = app => new NamedRouter(app, { mountpath, routeRegistry: registry })
+      return this.app.use(mountpath, appWithNamedRouterContext(bindRouter))
+    }
     return this.app.use(...args)
   }
 }
 
 for (const method of supportedExpressMethods) {
   NamedRouter.prototype[method] = function (name, path, handler) {
-    routes.register(name, path, { app: this.app })
+    this.routes.register(name, path, { app: this.app })
     return this.app[method](path, handler)
   }
 }

@@ -78,3 +78,35 @@ namedRouter.use('/admin', subApp)
 
 routes.dashboard() // => /admin/dashboard
 ```
+
+### Named Sub Module Binding
+
+sub-app.js
+```
+import express from 'express'
+
+const subAppWithNamedRouter = bindRouter => {
+  const subApp = express()
+  const namedRouter = bindRouter(subApp)
+
+  namedRouter.route('dashboard', '/dashboard')
+    .get((req,res) => { ... })
+
+}
+
+
+export default subAppWithNamedRouter
+```
+
+app.js
+```
+import express from 'express'
+import subApp from './sub-app.js'
+const app = express()
+
+const namedRouter = new NamedRouter(app)
+
+namedRouter.use('admin', '/admin', subApp)
+
+routes.admin.dashboard() // => /admin/dashboard
+```
