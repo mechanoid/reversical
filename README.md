@@ -1,6 +1,9 @@
-# namename
+# reversical
 
-a minimal named router for express.
+> something that is utterly ridiculous and amazingly pointless. Root word: reverse.
+— on [Urban Dictionary](https://www.urbandictionary.com/define.php?term=reversical) by [Griffin Williams](https://www.urbandictionary.com/author.php?author=Griffin%20Williams) (whoever that is)
+
+but also a minimal named router for expressjs.
 
 ## Installation
 
