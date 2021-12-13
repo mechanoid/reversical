@@ -29,7 +29,7 @@ class Route {
   }
 
   get mountpath () {
-    return this.app.mountpath || this.subModuleMountPath
+    return this.app.mountpath || this.app.reversicalMountpath || this.subModuleMountPath
   }
 
   render (params = {}, query = {}) {
@@ -90,9 +90,17 @@ export class NamedRouter {
       const registry = new RouteRegistry()
       this.routes.addSubmodule(subModuleName, registry)
 
-      const bindRouter = app => new NamedRouter(app, { mountpath, routeRegistry: registry })
+      const bindRouter = app => {
+        extendRouterWithMountpath(app, mountpath)
+        return new NamedRouter(app, { mountpath, routeRegistry: registry })
+      }
       return this.app.use(mountpath, appWithNamedRouterContext(bindRouter))
+    } else if (args.length === 2) {
+      const [mountpath, appOrRouter] = args
+      extendRouterWithMountpath(appOrRouter, mountpath)
+      return this.app.use(mountpath, appOrRouter)
     }
+
     return this.app.use(...args)
   }
 }
@@ -101,5 +109,11 @@ for (const method of supportedExpressMethods) {
   NamedRouter.prototype[method] = function (name, path, handler) {
     this.routes.register(name, path, { app: this.app })
     return this.app[method](path, handler)
+  }
+}
+
+function extendRouterWithMountpath (router, mountpath) {
+  if (router && !router.mountpath) {
+    router.reversicalMountpath = mountpath
   }
 }

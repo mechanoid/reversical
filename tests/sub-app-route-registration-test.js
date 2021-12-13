@@ -52,4 +52,17 @@ test('register routes for "named" path mounted sub-app', () => {
   assert.equal(routes.admin.records(), '/admin/records')
 })
 
+test('register routes for path mounted router', () => {
+  const app = express()
+  const router = express.Router()
+  const namedAppRouter = new NamedRouter(app)
+  const namedSubAppRouter = new NamedRouter(router)
+
+  namedSubAppRouter.get('records', '/records', (req, res) => { })
+
+  namedAppRouter.use('/not-named-sub-app-mount', router)
+
+  assert.equal(routes.records(), '/not-named-sub-app-mount/records')
+})
+
 test.run()
