@@ -1,7 +1,11 @@
 import { test } from 'uvu'
 import assert from 'assert/strict'
 import express from 'express'
-import { NamedRouter, routes } from '../index.js'
+import { NamedRouter, routes, reset } from '../index.js'
+
+test.before.each(() => {
+  reset()
+})
 
 test('create named route via app.get', () => {
   const app = express()

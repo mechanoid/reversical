@@ -53,7 +53,11 @@ class RouteRegistry {
 }
 
 // initialize on first import
-export const routes = new RouteRegistry()
+export let routes = new RouteRegistry()
+
+export const reset = () => {
+  routes = new RouteRegistry()
+}
 
 export class NamedRouter {
   constructor (app) {
