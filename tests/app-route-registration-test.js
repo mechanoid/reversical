@@ -46,4 +46,24 @@ test('register multiple handlers via route chaining', () => {
   assert.equal(routes.chainedRoute(), '/chained-routes')
 })
 
+test('register route with path params', () => {
+  const app = express()
+  const namedRouter = new NamedRouter(app)
+
+  namedRouter.route('route-with-params', '/routes/:id')
+    .get((req, res) => {})
+
+  assert.equal(routes.routeWithParams({ id: 12 }), '/routes/12')
+})
+
+test('register route with query/search params', () => {
+  const app = express()
+  const namedRouter = new NamedRouter(app)
+
+  namedRouter.route('route-with-params', '/routes/:id')
+    .get((req, res) => {})
+
+  assert.equal(routes.routeWithParams({ id: 12 }, { s: 'term' }), '/routes/12?s=term')
+})
+
 test.run()
