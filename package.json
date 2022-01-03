@@ -1,6 +1,6 @@
 {
   "name": "reversical",
-  "version": "1.3.3",
+  "version": "1.4.0",
   "description": "super simple named / reverse routing for express. Supports sub-apps though",
   "repository": {
     "type": "git",
