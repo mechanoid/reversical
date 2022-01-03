@@ -7,7 +7,7 @@ test.before.each(() => {
   reset()
 })
 
-test('create named route via app.get', () => {
+test('render routes with host', () => {
   const app = express()
   const namedRouter = new NamedRouter(app)
 

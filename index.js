@@ -37,8 +37,8 @@ class Route {
   render (params = {}, query = {}, { host = null } = {}) {
     try {
       const toPath = compile(this.routePath, { encode: encodeURIComponent })
-      const pathname = toPath(params)
-      return pathnameToUrl(pathname, query, { host })
+      const pathname = toPath(params || {})
+      return pathnameToUrl(pathname, query || {}, { host })
     } catch (e) {
       if (e instanceof TypeError) {
         console.log(`failed to expand "${this.routePath}" with params "${JSON.stringify(params)}"`, e.stack)
