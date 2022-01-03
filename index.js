@@ -10,11 +10,13 @@ const supportedExpressMethods = [
   'checkout', 'copy', 'delete', 'get', 'head', 'lock', 'merge', 'mkactivity', 'mkcol', 'move', 'm-search', 'notify', 'options', 'patch', 'post', 'purge', 'put', 'report', 'search', 'subscribe', 'trace', 'unlock', 'unsubscribe'
 ]
 
-const pathnameToRelativeUrl = (pathname, query = {}) => {
+// If no host is provided a relative URL is created, otherwise the host is used
+const pathnameToUrl = (pathname, query = {}, { host = null } = {}) => {
   const fakeHost = 'http://fakehost'
-  const resultUrl = new URL(pathname, fakeHost)
+  const resultUrl = new URL(pathname, host || fakeHost)
   resultUrl.search = new URLSearchParams(query)
-  return format(resultUrl, { auth: false, fragment: false }).slice(fakeHost.length)
+  const cleansedUrl = format(resultUrl, { auth: false, fragment: false })
+  return host ? cleansedUrl : cleansedUrl.slice(fakeHost.length)
 }
 
 class Route {
@@ -32,11 +34,11 @@ class Route {
     return this.app.mountpath || this.app.reversicalMountpath || this.subModuleMountPath
   }
 
-  render (params = {}, query = {}) {
+  render (params = {}, query = {}, { host = null } = {}) {
     try {
       const toPath = compile(this.routePath, { encode: encodeURIComponent })
       const pathname = toPath(params)
-      return pathnameToRelativeUrl(pathname, query)
+      return pathnameToUrl(pathname, query, { host })
     } catch (e) {
       if (e instanceof TypeError) {
         console.log(`failed to expand "${this.routePath}" with params "${JSON.stringify(params)}"`, e.stack)
