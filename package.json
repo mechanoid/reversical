@@ -15,16 +15,16 @@
   "devDependencies": {
     "eslint": "^7.32.0",
     "eslint-config-standard": "^16.0.3",
-    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.2.0",
-    "express": "^4.17.1",
-    "uvu": "^0.5.2"
+    "express": "^4.17.3",
+    "uvu": "^0.5.3"
   },
   "type": "module",
   "module": "index.js",
   "dependencies": {
-    "camelcase": "^6.2.1",
+    "camelcase": "^6.3.0",
     "path-to-regexp": "^6.2.0"
   }
 }
