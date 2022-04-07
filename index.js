@@ -20,18 +20,20 @@ const pathnameToUrl = (pathname, query = {}, { host = null } = {}) => {
 }
 
 class Route {
-  constructor (path, { app, mountpath } = {}) {
+  constructor (path, { app, mountpath, registry } = {}) {
     this.path = path
     this.app = app
     this.subModuleMountPath = mountpath
-  }
-
-  get routePath () {
-    return this.mountpath ? join(this.mountpath, this.path) : this.path
+    this.registry = registry
   }
 
   get mountpath () {
     return this.app.mountpath || this.app.reversicalMountpath || this.subModuleMountPath
+  }
+
+  get routePath () {
+    const chainedMountPath = this.registry.chainedRoutePath(this.mountpath)
+    return join(chainedMountPath, this.path)
   }
 
   render (params = {}, query = {}, { host = null } = {}) {
@@ -50,12 +52,14 @@ class Route {
 }
 
 class RouteRegistry {
-  constructor () {
+  constructor ({ parentRegistry, mountpath } = {}) {
     this.routes = {}
+    this.parentRegistry = parentRegistry
+    this.mountpath = mountpath
   }
 
   register (name, path, { app, mountpath } = {}) {
-    const route = new Route(path, { app, mountpath })
+    const route = new Route(path, { app, mountpath, registry: this })
 
     if (!this.routes[name] && !hasOwn.call(this, name)) {
       this.routes[name] = route
@@ -71,6 +75,28 @@ class RouteRegistry {
       this.routes[name] = name
       this[camelCase(name)] = registry
     }
+  }
+
+  chainedRoutePath (routeMountpath) {
+    const parentRegistries = []
+    const maxDepths = 10
+    let i = 0
+    let parentRouteRegistry = this.parentRegistry
+
+    while (parentRouteRegistry) {
+      if (i >= maxDepths) { break } else { i++ }
+
+      parentRegistries.unshift(parentRouteRegistry)
+      parentRouteRegistry = parentRouteRegistry.parentRegistry
+    }
+
+    const paths = []
+      .concat(parentRegistries.map(r => r.mountpath))
+      .filter(x => !!x)
+
+    paths.push(routeMountpath)
+
+    return paths.length > 0 ? join(...paths) : ''
   }
 }
 
@@ -99,10 +125,10 @@ export class NamedRouter {
   }
 
   use (...args) {
-    if (args.length === 3) {
+    if (args.length === 3) { // named router
       const [subModuleName, mountpath, appWithNamedRouterContext] = args
 
-      const registry = new RouteRegistry()
+      const registry = new RouteRegistry({ parentRegistry: this.routes, mountpath })
       this.routes.addSubmodule(subModuleName, registry)
 
       const bindRouter = app => {
@@ -110,7 +136,7 @@ export class NamedRouter {
         return new NamedRouter(app, { mountpath, routeRegistry: registry })
       }
       return this.app.use(mountpath, appWithNamedRouterContext(bindRouter))
-    } else if (args.length === 2) {
+    } else if (args.length === 2) { // not named router
       const [mountpath, appOrRouter] = args
       extendRouterWithMountpath(appOrRouter, mountpath)
       return this.app.use(mountpath, appOrRouter)
